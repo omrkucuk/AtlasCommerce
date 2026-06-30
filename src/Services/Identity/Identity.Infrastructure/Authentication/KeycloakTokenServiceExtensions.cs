@@ -25,6 +25,11 @@ namespace Identity.Infrastructure.Authentication
                 client.BaseAddress = new Uri(keycloakBaseUri);
             });
 
+            services.AddHttpClient<IKeycloakAdminService, KeycloakAdminService>(client =>
+            {
+                client.BaseAddress = new Uri(keycloakBaseUri);
+            });
+
             return services;
         }
     }

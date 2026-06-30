@@ -1,7 +1,9 @@
 ﻿using Identity.Application.Features.Auth.Commands.Login;
 using Identity.Application.Features.Auth.Commands.RefreshToken;
+using Identity.Application.Features.Auth.Commands.Register;
 using Identity.Application.Features.Auth.DTOs;
 using MediatR;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using System.Runtime.CompilerServices;
 
@@ -16,6 +18,16 @@ namespace Identity.API.Controllers
         public AuthController(ISender mediator)
         {
             _mediator = mediator;
+        }
+
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] RegisterCommand command, CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(command, cancellationToken);
+            if (result.IsFailure)
+                return BadRequest(new { message = result.Error.Description });
+
+            return Ok(result.Value);
         }
 
         [HttpPost("login")]
