@@ -3,6 +3,7 @@ using AtlasCommerce.BuildingBlocks.Common.Interceptors;
 using AtlasCommerce.BuildingBlocks.EventBus.Extensions;
 using Catalog.Application.Interfaces;
 using Catalog.Domain.Entities;
+using Catalog.Infrastructure.EventBus;
 using Catalog.Infrastructure.Persistence.Context;
 using Catalog.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
@@ -49,6 +50,7 @@ namespace Catalog.Infrastructure
                 
 
             services.AddScoped<IFileStorageService, MinioFileStorageService>();
+            services.AddScoped<IEventBus, MassTransitEventBus>();
 
             services.AddEventBus(configuration);
 

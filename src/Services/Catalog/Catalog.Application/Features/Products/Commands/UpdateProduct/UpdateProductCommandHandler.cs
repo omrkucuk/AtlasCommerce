@@ -1,4 +1,5 @@
 ﻿using AtlasCommerce.BuildingBlocks.Common.Results;
+using Catalog.Application.IntegrationEvents;
 using Catalog.Application.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -13,10 +14,11 @@ namespace Catalog.Application.Features.Products.Commands.UpdateProduct
     public sealed class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand, Result>
     {
         private readonly ICatalogDbContext _context;
-
-        public UpdateProductCommandHandler(ICatalogDbContext context)
+        private readonly IEventBus _eventBus;
+        public UpdateProductCommandHandler(ICatalogDbContext context, IEventBus eventBus)
         {
             _context = context;
+            _eventBus = eventBus;
         }
 
         public async Task<Result> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
@@ -42,6 +44,14 @@ namespace Catalog.Application.Features.Products.Commands.UpdateProduct
             product.Update(request.Name, request.Description, request.BasePrice, request.StockQuantity, request.CategoryId, request.BrandId, request.IsActive, request.IsFeatured);
 
             await _context.SaveChangesAsync(cancellationToken);
+
+            var category = await _context.Categories
+                .FirstAsync(c => c.Id == request.CategoryId, cancellationToken);
+
+            var brand = await _context.Brands
+                .FirstAsync(b => b.Id == request.BrandId, cancellationToken);
+
+            await _eventBus.PublishAsync(new ProductUpdatedEvent(product.Id, product.Name, product.Sku, product.BasePrice, product.StockQuantity, product.CategoryId, category.Name, product.BrandId, brand.Name, product.IsActive, product.IsFeatured), cancellationToken);
 
             return Result.Success();
         }

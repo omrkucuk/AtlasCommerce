@@ -1,4 +1,5 @@
 ﻿using AtlasCommerce.BuildingBlocks.Common.Results;
+using Catalog.Application.IntegrationEvents;
 using Catalog.Application.Interfaces;
 using Catalog.Domain.Entities;
 using MediatR;
@@ -6,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,10 +16,12 @@ namespace Catalog.Application.Features.Products.Commands.CreateProduct
     public sealed class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, Result<Guid>>
     {
         private readonly ICatalogDbContext _context;
+        private readonly IEventBus _eventBus;
 
-        public CreateProductCommandHandler(ICatalogDbContext context)
+        public CreateProductCommandHandler(ICatalogDbContext context, IEventBus eventBus)
         {
             _context = context;
+            _eventBus = eventBus;
         }
 
         public async Task<Result<Guid>> Handle(CreateProductCommand request, CancellationToken cancellationToken)
@@ -51,6 +55,16 @@ namespace Catalog.Application.Features.Products.Commands.CreateProduct
 
             _context.Products.Add(product);
             await _context.SaveChangesAsync(cancellationToken);
+
+            // Kategori ve marka adlarını event için 
+            var category = await _context.Categories
+                .FirstAsync(c => c.Id == request.CategoryId, cancellationToken);
+            var brand = await _context.Brands
+                .FirstAsync(b => b.Id == request.BrandId, cancellationToken);
+
+            await _eventBus.PublishAsync(new ProductCreatedEvent(
+                product.Id, product.Name, product.Sku, product.BasePrice, product.StockQuantity, product.CategoryId, category.Name, product.BrandId, brand.Name, product.IsActive, product.IsFeatured),
+                cancellationToken);
 
             return Result.Success(product.Id);
         }
