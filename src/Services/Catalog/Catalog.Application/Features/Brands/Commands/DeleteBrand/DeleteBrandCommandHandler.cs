@@ -1,4 +1,5 @@
 ﻿using AtlasCommerce.BuildingBlocks.Common.Results;
+using AtlasCommerce.BuildingBlocks.EventBus.Events;
 using Catalog.Application.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -13,10 +14,12 @@ namespace Catalog.Application.Features.Brands.Commands.DeleteBrand
     public sealed class DeleteBrandCommandHandler : IRequestHandler<DeleteBrandCommand, Result>
     {
         private readonly ICatalogDbContext _context;
+        private readonly IEventBus _eventBus;
 
-        public DeleteBrandCommandHandler(ICatalogDbContext context)
+        public DeleteBrandCommandHandler(ICatalogDbContext context, IEventBus eventBus)
         {
             _context = context;
+            _eventBus = eventBus;
         }
 
         public async Task<Result> Handle(DeleteBrandCommand request, CancellationToken cancellationToken)
@@ -35,6 +38,8 @@ namespace Catalog.Application.Features.Brands.Commands.DeleteBrand
 
             _context.Brands.Remove(brand);
             await _context.SaveChangesAsync(cancellationToken);
+
+            await _eventBus.PublishAsync(new BrandDeletedEvent(brand.Id), cancellationToken);
 
             return Result.Success();
         }

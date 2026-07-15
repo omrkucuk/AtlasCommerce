@@ -1,13 +1,24 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>4a23dc2a-fae8-4192-bb34-15ee1eda35fd</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
+    <PackageReference Include="Elastic.Clients.Elasticsearch" Version="9.4.0" />
+    <PackageReference Include="MassTransit.RabbitMQ" Version="8.3.6" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.17" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\BuildingBlocks\Common\AtlasCommerce.BuildingBlocks.Common\AtlasCommerce.BuildingBlocks.Common.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\EventBus\AtlasCommerce.BuildingBlocks.EventBus\AtlasCommerce.BuildingBlocks.EventBus.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\HealthChecks\AtlasCommerce.BuildingBlocks.HealthChecks\AtlasCommerce.BuildingBlocks.HealthChecks.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\Logging\AtlasCommerce.BuildingBlocks.Logging\AtlasCommerce.BuildingBlocks.Logging.csproj" />
   </ItemGroup>
 
 </Project>

@@ -76,7 +76,7 @@ namespace Catalog.Domain.Entities
             CategoryId = categoryId;
             BrandId = brandId;
             IsActive = isActive;
-            IsActive = isFeatured;
+            IsFeatured = isFeatured;
         }
 
         // Görsel yönetimi

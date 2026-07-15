@@ -1,4 +1,5 @@
 ﻿using AtlasCommerce.BuildingBlocks.Common.Results;
+using AtlasCommerce.BuildingBlocks.EventBus.Events;
 using Catalog.Application.Interfaces;
 using Catalog.Domain.Entities;
 using MediatR;
@@ -14,10 +15,12 @@ namespace Catalog.Application.Features.Categories.Commands.CreateCategory
     public sealed class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryCommand, Result<Guid>>
     {
         private readonly ICatalogDbContext _context;
+        private readonly IEventBus _eventBus;
 
-        public CreateCategoryCommandHandler(ICatalogDbContext context)
+        public CreateCategoryCommandHandler(ICatalogDbContext context, IEventBus eventBus)
         {
             _context = context;
+            _eventBus = eventBus;
         }
 
         public async Task<Result<Guid>> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
@@ -41,6 +44,8 @@ namespace Catalog.Application.Features.Categories.Commands.CreateCategory
 
             _context.Categories.Add(category);
             await _context.SaveChangesAsync(cancellationToken);
+
+            await _eventBus.PublishAsync(new CategoryCreatedEvent(category.Id, category.Name, category.Description, category.ImageUrl, category.DisplayOrder, category.IsActive, category.ParentId, category.Parent?.Name), cancellationToken);
 
             return Result.Success(category.Id);
         }

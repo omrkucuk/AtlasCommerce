@@ -1,4 +1,5 @@
 ﻿using AtlasCommerce.BuildingBlocks.Common.Results;
+using AtlasCommerce.BuildingBlocks.EventBus.Events;
 using Catalog.Application.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -13,10 +14,12 @@ namespace Catalog.Application.Features.Categories.Commands.DeleteCategory
     public sealed class DeleteCategoryCommandHandler : IRequestHandler<DeleteCategoryCommand, Result>
     {
         private readonly ICatalogDbContext _context;
+        private readonly IEventBus _eventBus;
 
-        public DeleteCategoryCommandHandler(ICatalogDbContext context)
+        public DeleteCategoryCommandHandler(ICatalogDbContext context, IEventBus eventBus)
         {
             _context = context;
+            _eventBus = eventBus;
         }
 
         public async Task<Result> Handle(DeleteCategoryCommand request, CancellationToken cancellationToken)
@@ -41,6 +44,8 @@ namespace Catalog.Application.Features.Categories.Commands.DeleteCategory
 
             _context.Categories.Remove(category);
             await _context.SaveChangesAsync(cancellationToken);
+
+            await _eventBus.PublishAsync(new CategoryDeletedEvent(category.Id), cancellationToken);
 
             return Result.Success();
         }
