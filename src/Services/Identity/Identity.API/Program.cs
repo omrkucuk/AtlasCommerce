@@ -1,6 +1,7 @@
 using AtlasCommerce.BuildingBlocks.Common.Middleware;
 using AtlasCommerce.BuildingBlocks.HealthChecks;
 using AtlasCommerce.BuildingBlocks.Logging;
+using AtlasCommerce.BuildingBlocks.Observability;
 using Identity.API.Middleware;
 using Identity.Application.Common.Interfaces;
 using Identity.Application.Features.Users.Commands.SyncUser;
@@ -35,6 +36,9 @@ builder.Services.AddMediatR(cfg =>
 builder.Services.AddHealthChecks()
     .AddNpgSql(builder.Configuration.GetConnectionString("IdentityDb")!, name: "postgresql");
 
+// Observability
+builder.Services.AddAtlasObservability(builder.Configuration, serviceName: "Identity.API");
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -47,6 +51,8 @@ var app = builder.Build();
 
 app.UseGlobalExceptionHandling();
 app.UseAtlasRequestLogging();
+app.UseAtlasObservability();
+
 
 if (app.Environment.IsDevelopment())
 {

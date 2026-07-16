@@ -1,6 +1,7 @@
 using AtlasCommerce.BuildingBlocks.Common.Middleware;
 using AtlasCommerce.BuildingBlocks.HealthChecks;
 using AtlasCommerce.BuildingBlocks.Logging;
+using AtlasCommerce.BuildingBlocks.Observability;
 using Gateway.API.Authentication;
 using Gateway.API.Swagger;
 
@@ -22,7 +23,22 @@ builder.Services.AddKeycloakAuthentication(builder.Configuration);
 // Swagger aggregation
 builder.Services.AddGatewaySwagger();
 
+builder.Services.AddAtlasObservability(builder.Configuration, serviceName: "ApiGateway");
+
 builder.Services.AddHealthChecks();
+
+builder.Services.AddHealthChecksUI(opts =>
+{
+    opts.SetEvaluationTimeInSeconds(10);
+    opts.MaximumHistoryEntriesPerEndpoint(50);
+    opts.UseApiEndpointHttpMessageHandler(sp => new HttpClientHandler
+    {
+        ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+    });
+})
+.AddInMemoryStorage();
+
+
 // Add services to the container.
 
 var app = builder.Build();
@@ -30,6 +46,7 @@ var app = builder.Build();
 
 app.UseGlobalExceptionHandling();
 app.UseAtlasRequestLogging();
+app.UseAtlasObservability();
 
 if (app.Environment.IsDevelopment())
     app.UseGatewaySwagger();
@@ -38,6 +55,13 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+
+app.MapHealthChecksUI(opts =>
+{
+    opts.UIPath = "/health-ui";
+    opts.ApiPath = "/health-ui-api";
+});
 
 app.MapReverseProxy();
 app.MapAtlasHealthChecks();

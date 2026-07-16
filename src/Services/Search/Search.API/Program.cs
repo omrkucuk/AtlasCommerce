@@ -1,6 +1,7 @@
 using AtlasCommerce.BuildingBlocks.Common.Middleware;
 using AtlasCommerce.BuildingBlocks.HealthChecks;
 using AtlasCommerce.BuildingBlocks.Logging;
+using AtlasCommerce.BuildingBlocks.Observability;
 using Elastic.Clients.Elasticsearch;
 using MassTransit;
 using Search.API.Authentication;
@@ -51,6 +52,9 @@ builder.Services.AddMassTransit(cfg =>
 
 builder.Services.AddKeycloakAuthentication(builder.Configuration);
 builder.Services.AddHealthChecks();
+
+builder.Services.AddAtlasObservability(builder.Configuration, serviceName: "Search.API");
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -64,6 +68,8 @@ await elasticsearchService.EnsureIndicesExistAsync();
 
 app.UseGlobalExceptionHandling();
 app.UseAtlasRequestLogging();
+app.UseAtlasObservability();
+
 
 if (app.Environment.IsDevelopment())
 {

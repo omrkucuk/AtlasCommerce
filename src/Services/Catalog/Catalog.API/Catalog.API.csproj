@@ -24,6 +24,7 @@
     <ProjectReference Include="..\..\..\BuildingBlocks\Common\AtlasCommerce.BuildingBlocks.Common\AtlasCommerce.BuildingBlocks.Common.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\HealthChecks\AtlasCommerce.BuildingBlocks.HealthChecks\AtlasCommerce.BuildingBlocks.HealthChecks.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\Logging\AtlasCommerce.BuildingBlocks.Logging\AtlasCommerce.BuildingBlocks.Logging.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\Observability\AtlasCommerce.BuildingBlocks.Observability\AtlasCommerce.BuildingBlocks.Observability.csproj" />
     <ProjectReference Include="..\Catalog.Infrastructure\Catalog.Infrastructure.csproj" />
   </ItemGroup>
 

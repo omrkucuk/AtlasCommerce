@@ -1,6 +1,7 @@
 using AtlasCommerce.BuildingBlocks.Common.Middleware;
 using AtlasCommerce.BuildingBlocks.HealthChecks;
 using AtlasCommerce.BuildingBlocks.Logging;
+using AtlasCommerce.BuildingBlocks.Observability;
 using Order.Application;
 using Order.Infrastructure;
 using Order.Infrastructure.Authentication;
@@ -13,6 +14,8 @@ builder.Host.UseAtlasSerilog(builder.Configuration, serviceName: "Order.API");
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddKeycloakAuthentication(builder.Configuration);
+
+builder.Services.AddAtlasObservability(builder.Configuration, serviceName: "Order.API");
 
 builder.Services.AddHealthChecks();
 
@@ -28,6 +31,8 @@ var app = builder.Build();
 
 app.UseGlobalExceptionHandling();
 app.UseAtlasRequestLogging();
+app.UseAtlasObservability();
+
 
 if (app.Environment.IsDevelopment())
 {

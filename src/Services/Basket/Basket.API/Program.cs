@@ -1,6 +1,7 @@
 using AtlasCommerce.BuildingBlocks.Common.Middleware;
 using AtlasCommerce.BuildingBlocks.HealthChecks;
 using AtlasCommerce.BuildingBlocks.Logging;
+using AtlasCommerce.BuildingBlocks.Observability;
 using Basket.API.Authentication;
 using Basket.API.Services;
 using StackExchange.Redis;
@@ -30,6 +31,8 @@ builder.Services.AddKeycloakAuthentication(builder.Configuration);
 
 builder.Services.AddHealthChecks().AddRedis(redisConnection, name: "redis");
 
+builder.Services.AddAtlasObservability(builder.Configuration, serviceName: "Basket.API");
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -41,6 +44,8 @@ var app = builder.Build();
 
 app.UseGlobalExceptionHandling();
 app.UseAtlasRequestLogging();
+app.UseAtlasObservability();
+
 
 if (app.Environment.IsDevelopment())
 {

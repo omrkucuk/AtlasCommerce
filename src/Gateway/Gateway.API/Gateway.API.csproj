@@ -11,6 +11,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AspNetCore.HealthChecks.UI" Version="9.0.0" />
+    <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="9.0.0" />
+    <PackageReference Include="AspNetCore.HealthChecks.UI.InMemory.Storage" Version="9.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.18" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.6" />
     <PackageReference Include="Yarp.ReverseProxy" Version="2.3.0" />
@@ -20,6 +23,7 @@
     <ProjectReference Include="..\..\BuildingBlocks\Common\AtlasCommerce.BuildingBlocks.Common\AtlasCommerce.BuildingBlocks.Common.csproj" />
     <ProjectReference Include="..\..\BuildingBlocks\HealthChecks\AtlasCommerce.BuildingBlocks.HealthChecks\AtlasCommerce.BuildingBlocks.HealthChecks.csproj" />
     <ProjectReference Include="..\..\BuildingBlocks\Logging\AtlasCommerce.BuildingBlocks.Logging\AtlasCommerce.BuildingBlocks.Logging.csproj" />
+    <ProjectReference Include="..\..\BuildingBlocks\Observability\AtlasCommerce.BuildingBlocks.Observability\AtlasCommerce.BuildingBlocks.Observability.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,52 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'atlas-identity'
+    static_configs:
+      - targets: ['host.docker.internal:7278']
+    metrics_path: '/metrics'
+    scheme: https
+    tls_config:
+      insecure_skip_verify: true
+
+  - job_name: 'atlas-catalog'
+    static_configs:
+      - targets: ['host.docker.internal:7252']
+    metrics_path: '/metrics'
+    scheme: https
+    tls_config:
+      insecure_skip_verify: true
+
+  - job_name: 'atlas-order'
+    static_configs:
+      - targets: ['host.docker.internal:7045']
+    metrics_path: '/metrics'
+    scheme: https
+    tls_config:
+      insecure_skip_verify: true
+
+  - job_name: 'atlas-basket'
+    static_configs:
+      - targets: ['host.docker.internal:7194']
+    metrics_path: '/metrics'
+    scheme: https
+    tls_config:
+      insecure_skip_verify: true
+
+  - job_name: 'atlas-search'
+    static_configs:
+      - targets: ['host.docker.internal:7283']
+    metrics_path: '/metrics'
+    scheme: https
+    tls_config:
+      insecure_skip_verify: true
+
+  - job_name: 'atlas-gateway'
+    static_configs:
+      - targets: ['host.docker.internal:7259']
+    metrics_path: '/metrics'
+    scheme: https
+    tls_config:
+      insecure_skip_verify: true

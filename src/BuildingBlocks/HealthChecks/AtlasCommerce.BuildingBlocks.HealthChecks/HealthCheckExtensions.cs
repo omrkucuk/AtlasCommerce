@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Routing;
 using System;
@@ -16,6 +17,11 @@ namespace AtlasCommerce.BuildingBlocks.HealthChecks
             endpoints.MapHealthChecks("/health", new HealthCheckOptions
             {
                 ResponseWriter = HealthCheckResponseWriter.WriteResponse
+            });
+
+            endpoints.MapHealthChecks("/health-detail", new HealthCheckOptions
+            {
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
             });
 
             return endpoints;
