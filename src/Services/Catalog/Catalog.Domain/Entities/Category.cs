@@ -33,8 +33,8 @@ namespace Catalog.Domain.Entities
             return new Category
             {
                 Name = name,
-                Description = description,
-                ParentId = parentId,
+                Description = description, 
+                ParentId = parentId, 
                 DisplayOrder = displayOrder,
             };
         }

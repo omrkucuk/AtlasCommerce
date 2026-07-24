@@ -18,7 +18,7 @@ namespace Catalog.Domain.Entities
 
         internal static ProductImage Create(Guid productId, string imageUrl, bool isMain = false)
         {
-            return new() { ProductId = productId, ImageUrl = imageUrl, IsMain = isMain };
+            return new () { ProductId = productId, ImageUrl = imageUrl, IsMain = isMain };
         }
         
         internal void SetMain(bool isMain) => IsMain = isMain;

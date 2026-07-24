@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Catalog.Application.Features.Categories.DTOs
 {
-    public sealed record CategoryDto(
+    public sealed record CategoryDto
+    (
         Guid Id,
         string Name,
         string? Description,

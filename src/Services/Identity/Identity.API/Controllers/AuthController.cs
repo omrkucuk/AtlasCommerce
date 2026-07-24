@@ -27,7 +27,13 @@ namespace Identity.API.Controllers
             if (result.IsFailure)
                 return BadRequest(new { message = result.Error.Description });
 
-            return Ok(result.Value);
+            SetRefreshTokenCookie(result.Value.RefreshToken);
+
+            return Ok(new
+            {
+                accessToken = result.Value.AccessToken,
+                expiresInSeconds = result.Value.ExpiresInSeconds
+            });
         }
 
         [HttpPost("login")]
@@ -38,18 +44,69 @@ namespace Identity.API.Controllers
             if (result.IsFailure)
                 return Unauthorized(new { message = result.Error.Description });
 
-            return Ok(result.Value);
+            SetRefreshTokenCookie(result.Value.RefreshToken);
+
+            return Ok(new
+            {
+                accessToken = result.Value.AccessToken,
+                expiresInSeconds = result.Value.ExpiresInSeconds
+            });
         }
 
         [HttpPost("refresh")]
-        public async Task<IActionResult> Refresh([FromBody] RefreshRequestDto request, CancellationToken cancellationToken)
+        public async Task<IActionResult> Refresh(CancellationToken cancellationToken)
         {
-            var result = await _mediator.Send(new RefreshTokenCommand(request.RefreshToken), cancellationToken);
+            var refreshToken = Request.Cookies["refreshToken"];
 
-            if (result.IsFailure)
+            if (string.IsNullOrWhiteSpace(refreshToken))
+                return Unauthorized(new { message = "Refresh token bulunamadı." });
+
+            var result = await _mediator.Send(new RefreshTokenCommand(refreshToken), cancellationToken);
+
+            if (result.IsFailure) 
+            {
+                DeleteRefreshTokenCookie();
                 return Unauthorized(new { message = result.Error.Description });
+            }
 
-            return Ok(result.Value);
+            SetRefreshTokenCookie(result.Value.RefreshToken);
+
+            return Ok(new
+            {
+                accessToken = result.Value.AccessToken,
+                expiresInSeconds = result.Value.ExpiresInSeconds
+            });
+        }
+
+        [HttpPost("logout")]
+        public IActionResult Logout()
+        {
+            DeleteRefreshTokenCookie();
+            return NoContent();
+        }
+
+
+        private void SetRefreshTokenCookie(string refreshToken)
+        {
+            Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTimeOffset.UtcNow.AddDays(7),
+                Path = "/api/auth"
+            });
+        }
+
+        private void DeleteRefreshTokenCookie()
+        {
+            Response.Cookies.Delete("refreshToken", new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Path = "/api/auth"
+            });
         }
     }
 }

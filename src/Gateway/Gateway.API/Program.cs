@@ -20,6 +20,18 @@ builder.Services.AddReverseProxy()
 // Keycloak
 builder.Services.AddKeycloakAuthentication(builder.Configuration);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("StoreFront", policy =>
+    {
+        policy
+            .WithOrigins("https://localhost:5173", "http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
+
 // Swagger aggregation
 builder.Services.AddGatewaySwagger();
 
@@ -43,6 +55,7 @@ builder.Services.AddHealthChecksUI(opts =>
 
 var app = builder.Build();
 
+app.UseCors("StoreFront");
 
 app.UseGlobalExceptionHandling();
 app.UseAtlasRequestLogging();

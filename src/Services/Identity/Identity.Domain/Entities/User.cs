@@ -37,10 +37,12 @@ namespace Identity.Domain.Entities
             };
         }
 
-        public void UpdateProfile(string firstName, string lastName)
+        public void UpdateProfile(string firstName, string lastName, string? email = null)
         {
             FirstName = firstName;
             LastName = lastName;
+            if (!string.IsNullOrWhiteSpace(email))
+                Email = email;
             MarkUpdated();
         }
 

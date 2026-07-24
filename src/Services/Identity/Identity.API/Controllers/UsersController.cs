@@ -1,4 +1,5 @@
 ﻿using AtlasCommerce.BuildingBlocks.Common.Middleware;
+using Identity.Application.Features.Users.Commands.UpdateProfile;
 using Identity.Application.Features.Users.Queries.GetCurrentUser;
 using Identity.Application.Features.Users.Queries.GetUserPermissions;
 using MediatR;
@@ -49,6 +50,23 @@ namespace Identity.API.Controllers
             return result.ToActionResult();
         }
 
+        [HttpPut("me")]
+        public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequest request,CancellationToken cancellationToken)
+        {
+            var keycloakId = GetKeycloakIdFromToken();
+            if (keycloakId is null) return Unauthorized();
+
+            var result = await _mediator.Send(
+                new UpdateProfileCommand(
+                    keycloakId.Value,
+                    request.FirstName,
+                    request.LastName,
+                    request.Email),
+                cancellationToken);
+
+            return result.ToActionResult();
+        }
+
         private Guid? GetKeycloakIdFromToken()
         {
             var claim = User.FindFirst(ClaimTypes.NameIdentifier) ?? User.FindFirst("sub");
@@ -60,5 +78,10 @@ namespace Identity.API.Controllers
 
             return keycloakId;
         }
+
+        public sealed record UpdateProfileRequest(
+            string FirstName,
+            string LastName,
+            string Email);
     }
 }

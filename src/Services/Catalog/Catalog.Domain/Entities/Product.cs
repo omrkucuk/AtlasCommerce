@@ -10,22 +10,22 @@ namespace Catalog.Domain.Entities
 {
     public sealed class Product : AuditableEntity, ISoftDeletable
     {
-        public string Name { get; set; } = string.Empty;
-        public string? Description { get; set; }
-        public string Sku { get; set; } = string.Empty;
-        public decimal BasePrice { get; set; }
-        public int StockQuantity { get; set; }
-        public bool IsActive { get; set; } = true;
-        public bool IsFeatured { get; set; }
+        public string Name { get; private set; } = string.Empty;
+        public string? Description { get; private set; }
+        public string Sku { get; private set; } = string.Empty;
+        public decimal BasePrice { get; private set; }
+        public int StockQuantity { get; private set; }
+        public bool IsActive { get; private set; } = true;
+        public bool IsFeatured { get; private set; }
 
         public bool IsDeleted { get; set; }
         public DateTime? DeletedAt { get; set; }
         public string? DeletedBy { get; set; }
 
-        public Guid CategoryId { get; set; }
-        public Category? Category { get; set; }
-        public Guid BrandId { get; set; }
-        public Brand? Brand { get; set; }
+        public Guid CategoryId { get; private set; }
+        public Category? Category { get; private set; }
+        public Guid BrandId { get; private set; }
+        public Brand? Brand { get; private set; }
 
         private readonly List<ProductImage> _images = new();
         public IReadOnlyCollection<ProductImage> Images => _images.AsReadOnly();
@@ -98,6 +98,7 @@ namespace Catalog.Domain.Entities
             var image = _images.FirstOrDefault(i => i.Id == imageId)
                 ?? throw new InvalidOperationException("Görsel bulunamadı");
             _images.Remove(image);
+
             if (image.IsMain && _images.Any())
                 _images.First().SetMain(true);
         }
@@ -107,6 +108,7 @@ namespace Catalog.Domain.Entities
         {
             if (string.IsNullOrEmpty(name))
                 throw new ArgumentException("Attribute adı boş olamaz.", nameof(name));
+
             if (_attributes.Any(a => a.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
                 throw new InvalidOperationException($"'{name}' adında bir attribute zaten var.");
 
@@ -130,6 +132,7 @@ namespace Catalog.Domain.Entities
                 throw new InvalidOperationException($"'{sku}' SKU'lu bir variant zaten var.");
 
             var variant = ProductVariant.Create(Id, sku, priceOverride, stockQuantity);
+
             foreach (var (attrName, attrValue) in attributes)
                 variant.AddAttribute(attrName, attrValue);
 
