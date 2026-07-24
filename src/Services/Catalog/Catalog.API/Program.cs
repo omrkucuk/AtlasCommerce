@@ -1,6 +1,7 @@
 using AtlasCommerce.BuildingBlocks.Common.Middleware;
 using AtlasCommerce.BuildingBlocks.HealthChecks;
 using AtlasCommerce.BuildingBlocks.Logging;
+using AtlasCommerce.BuildingBlocks.Observability;
 using Catalog.Application;
 using Catalog.Infrastructure;
 using Catalog.Infrastructure.Authentication;
@@ -19,6 +20,7 @@ builder.Services.AddKeycloakAuthentication(builder.Configuration);
 builder.Services.AddHealthChecks()
     .AddSqlServer(builder.Configuration.GetConnectionString("CatalogDb")!, name: "mssql");
 
+builder.Services.AddAtlasObservability(builder.Configuration, serviceName: "Catalog.API");
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -29,6 +31,8 @@ var app = builder.Build();
 
 app.UseGlobalExceptionHandling();
 app.UseAtlasRequestLogging();
+app.UseAtlasObservability();
+
 
 if (app.Environment.IsDevelopment())
 {

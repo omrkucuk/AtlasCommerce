@@ -28,10 +28,7 @@ namespace Identity.Application.Features.Users.Commands.SyncUser
 
             if(existingUser is not null)
             {
-                existingUser.UpdateProfile(request.FirstName, request.LastName);
-
                 await SyncRolesAsync(existingUser, request.Roles, cancellationToken);
-
                 await _context.SaveChangesAsync(cancellationToken);
                 return Result.Success(existingUser.Id);
             }

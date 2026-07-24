@@ -112,7 +112,7 @@ services:
       retries: 5
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.0.0
     container_name: atlas-elasticsearch
     environment:
       discovery.type: single-node
@@ -128,6 +128,16 @@ services:
       timeout: 5s
       retries: 5
 
+  kibana:
+    image: docker.elastic.co/kibana/kibana:9.0.0
+    container_name: atlas-kibana
+    environment:
+     - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+     - "5601:5601"
+    depends_on:
+     - elasticsearch
+
   seq:
     image: datalust/seq:latest
     container_name: atlas-seq
@@ -139,6 +149,44 @@ services:
       - "5341:5341"   
     volumes:
       - seq_data:/data
+
+  jaeger:
+      image: jaegertracing/all-in-one:latest
+      container_name: atlas-jaeger
+      environment:
+        COLLECTOR_OTLP_ENABLED: "true"
+      ports:
+        - "16686:16686"  
+        - "4317:4317"    
+        - "4318:4318"    
+      volumes:
+        - jaeger_data:/tmp
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: atlas-prometheus
+    ports:
+    - "9090:9090"
+    volumes:
+    - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    - prometheus_data:/prometheus
+    command:
+    - '--config.file=/etc/prometheus/prometheus.yml'
+    - '--storage.tsdb.retention.time=7d'
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: atlas-grafana
+    environment:
+        GF_SECURITY_ADMIN_USER: admin
+        GF_SECURITY_ADMIN_PASSWORD: admin
+    ports:
+    - "3000:3000"
+    volumes:
+    - grafana_data:/var/lib/grafana
+    depends_on:
+    - prometheus
+
   
 volumes:
   postgres_data:
@@ -150,4 +198,7 @@ volumes:
   minio_data:
   elasticsearch_data:
   seq_data:
+  jaeger_data:
+  prometheus_data:
+  grafana_data:
       

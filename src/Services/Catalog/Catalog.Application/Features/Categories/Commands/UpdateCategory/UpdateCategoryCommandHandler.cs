@@ -1,4 +1,5 @@
 ﻿using AtlasCommerce.BuildingBlocks.Common.Results;
+using AtlasCommerce.BuildingBlocks.EventBus.Events;
 using Catalog.Application.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -13,10 +14,12 @@ namespace Catalog.Application.Features.Categories.Commands.UpdateCategory
     public sealed class UpdateCategoryCommandHandler : IRequestHandler<UpdateCategoryCommand, Result>
     {
         private readonly ICatalogDbContext _context;
+        private readonly IEventBus _eventBus;
 
-        public UpdateCategoryCommandHandler(ICatalogDbContext context)
+        public UpdateCategoryCommandHandler(ICatalogDbContext context, IEventBus eventBus)
         {
             _context = context;
+            _eventBus = eventBus;
         }
 
         public async Task<Result> Handle(UpdateCategoryCommand request, CancellationToken cancellationToken)
@@ -38,6 +41,9 @@ namespace Catalog.Application.Features.Categories.Commands.UpdateCategory
             category.Update(request.Name, request.Description, request.DisplayOrder, request.IsActive);
 
             await _context.SaveChangesAsync(cancellationToken);
+
+            await _eventBus.PublishAsync(new CategoryUpdatedEvent(category.Id, category.Name, category.Description, category.ImageUrl, category.DisplayOrder, category.IsActive, category.ParentId, category.Parent?.Name), cancellationToken);
+
             return Result.Success();
         }
     }

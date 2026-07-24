@@ -5,9 +5,12 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>cbaab3bf-4494-471f-84e7-28c16304c461</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>..\..\..\..</DockerfileContext>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.23.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.6" />
   </ItemGroup>
 
@@ -15,6 +18,7 @@
     <ProjectReference Include="..\..\..\BuildingBlocks\Common\AtlasCommerce.BuildingBlocks.Common\AtlasCommerce.BuildingBlocks.Common.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\HealthChecks\AtlasCommerce.BuildingBlocks.HealthChecks\AtlasCommerce.BuildingBlocks.HealthChecks.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\Logging\AtlasCommerce.BuildingBlocks.Logging\AtlasCommerce.BuildingBlocks.Logging.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\Observability\AtlasCommerce.BuildingBlocks.Observability\AtlasCommerce.BuildingBlocks.Observability.csproj" />
     <ProjectReference Include="..\Order.Application\Order.Application.csproj" />
     <ProjectReference Include="..\Order.Infrastructure\Order.Infrastructure.csproj" />
   </ItemGroup>

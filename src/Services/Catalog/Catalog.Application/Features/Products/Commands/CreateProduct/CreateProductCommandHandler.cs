@@ -1,5 +1,5 @@
 ﻿using AtlasCommerce.BuildingBlocks.Common.Results;
-using Catalog.Application.IntegrationEvents;
+using AtlasCommerce.BuildingBlocks.EventBus.Events;
 using Catalog.Application.Interfaces;
 using Catalog.Domain.Entities;
 using MediatR;

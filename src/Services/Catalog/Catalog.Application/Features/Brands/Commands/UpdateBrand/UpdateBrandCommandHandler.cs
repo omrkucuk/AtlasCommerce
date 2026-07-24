@@ -1,4 +1,5 @@
 ﻿using AtlasCommerce.BuildingBlocks.Common.Results;
+using AtlasCommerce.BuildingBlocks.EventBus.Events;
 using Catalog.Application.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -13,10 +14,12 @@ namespace Catalog.Application.Features.Brands.Commands.UpdateBrand
     public sealed class UpdateBrandCommandHandler : IRequestHandler<UpdateBrandCommand, Result>
     {
         private readonly ICatalogDbContext _context;
+        private readonly IEventBus _eventBus;
 
-        public UpdateBrandCommandHandler(ICatalogDbContext context)
+        public UpdateBrandCommandHandler(ICatalogDbContext context, IEventBus eventBus)
         {
             _context = context;
+            _eventBus = eventBus;
         }
 
         public async Task<Result> Handle(UpdateBrandCommand request, CancellationToken cancellationToken)
@@ -35,6 +38,8 @@ namespace Catalog.Application.Features.Brands.Commands.UpdateBrand
 
             brand.Update(request.Name, request.Description, request.IsActive);
             await _context.SaveChangesAsync(cancellationToken);
+
+            await _eventBus.PublishAsync(new BrandUpdatedEvent(brand.Id, brand.Name, brand.Description, brand.LogoUrl, brand.IsActive), cancellationToken);
 
             return Result.Success();
         }
